@@ -47,8 +47,6 @@ class TrainingSet_util :
                 AdID, AdvertiserID, int(Depth), \
                 int(Position), QueryID, KeywordID,\
                 TitleID, DescriptionID, UserID 
-    
-
 
     def prepare(self) :
         self.click_cnt = 0
