@@ -35,6 +35,7 @@ class TrainingSet_util :
         self.acookie_set = set()
         self.ad_set = set()
         self.ad2user_map = {}
+        self.advertiser_map = {}
 
     def _parse_training_log_file (self, line) :
         terms = line.strip().split('\t')
@@ -68,13 +69,15 @@ class TrainingSet_util :
             
             self.acookie_set.add(UserID)
             self.ad_set.add(AdID)
+            if AdvertiserID not in self.advertiser_map:
+                self.advertiser_map[AdvertiserID] = set()
+            self.advertiser_map[AdvertiserID].add(AdID)
             
             if AdID not in self.ad2user_map :
-                self.ad2user_map[AdID] = []
-            self.ad2user_map[AdID].append(UserID)
+                self.ad2user_map[AdID] = set()
+            self.ad2user_map[AdID].add(UserID)
             
             if line_cnt % 100000 == 0 : print line_cnt
-        
         
     def printStatus(self) :
         output_format = '%s25%s'
@@ -86,14 +89,30 @@ class TrainingSet_util :
         ad2user_tmpfile = file('ad2user_tmpfile', 'w')
         ad2user_outputformat = '%s%s\n'
         for ad in self.ad2user_map :
-            if len(self.ad2user_map[ad]) < 2 : continue
+            if len(self.ad2user_map[ad]) < 1 : continue
             ad2user_tmpfile.write(ad2user_outputformat % (ad, ''.join(self.ad2user_map[ad])))
         ad2user_tmpfile.close()
+
+        acookie_file = file('user.dat', 'w')
+        ad_file = file('adID.dat', 'w')
+        advertiser_file = file('advertiser2ad.dat', 'w')
+
+        for acookie in self.acookie_set :
+            acookie_file.write(acookie + '\n')
+
+        for ad_id in self.ad_set :
+            ad_file.write(ad_id + '\n')
+
+        for adver in self.advertiser_map :
+            advertiser_file.write(adver + '\t'.join(self.advertiser_map[adver]) + '\n')
+
+
 
 
 if __name__ == '__main__' :
     dataset = {}
-    dataset['training'] = '../dataset/training.sample'
+    #dataset['training'] = '../dataset/training.sample'
+    dataset['training'] = sys.argv[1]
 #    dataset['training'] = '../dataset/training.txt'
     ts_util = TrainingSet_util(dataset)
     ts_util.prepare()

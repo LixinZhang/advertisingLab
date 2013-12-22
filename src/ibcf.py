@@ -53,7 +53,7 @@ class IBCF :
                 self.similarityMat[item_id2][item_id1] = sim
         self.__generateTopSimilarity()
 
-    def dumpRes2File(self, dumpFile, Top = 50) :
+    def dumpRes2File(self, dumpFile, Top = 10) :
         dumpF = file(dumpFile, 'w')
         line_format = '%s\x01%s\x01%d\x01%f\x01\n'
         for item_id1 in self.itemMat :
@@ -63,7 +63,6 @@ class IBCF :
             for t in range(min(Top, len(arr))) :
                 dumpF.write(line_format % (item_id1, arr[t][1], idx,  arr[t][0]))
                 idx += 1 
-
         dumpF.close()
 
     def __generateTopSimilarity(self, Top = 10) :
