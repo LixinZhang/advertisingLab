@@ -27,8 +27,12 @@ Each line consists of fields delimited by the TAB character
 
 import sys
 
+_dataset = {}
+_dataset['training'] = '../dataset/training.txt'
+
+
 class TrainingSet_util :
-    def __init__ (self, dataset = {}) :
+    def __init__ (self, dataset = _dataset) :
         self.training_log_file = dataset.get('training', None)
         if self.training_log_file == None :
             return
@@ -49,6 +53,94 @@ class TrainingSet_util :
                 int(Position), QueryID, KeywordID,\
                 TitleID, DescriptionID, UserID
 
+
+    def splitFilesByHashUser(self, hashbase = 1) :
+       hashfiles = [file(str(hashval) + '.dat', 'w') for hashval in range(hashbase)]
+       line_cnt = 0
+       for line in file('user.filter') :
+           line_cnt += 1
+           terms = self._parse_training_log_file(line) 
+           if terms == None : continue
+           Click, Impression, Display_url,\
+               AdID, AdvertiserID, Depth, \
+               Position, QueryID, KeywordID,\
+               TitleID, DescriptionID, UserID = terms
+           if UserID == '0' : continue
+
+           hashfiles[int(UserID) % hashbase].write(line)
+
+       for hashfile in hashfiles : hashfile.close()
+
+    def aggregateUser(self, userfilter = 'user.filter', aggregateUserResultFile = 'user.aggr') :
+        userDict = dict()
+        queryIDset = set()
+        titleIDset = set()
+        descIDset = set()
+
+        for line in file(userfilter) :
+            terms = self._parse_training_log_file(line) 
+            if terms == None : continue
+            Click, Impression, Display_url,\
+                AdID, AdvertiserID, Depth, \
+                Position, QueryID, KeywordID,\
+                TitleID, DescriptionID, UserID = terms
+            if UserID not in userDict :
+                userDict[UserID] = {'queryIDlist' : [], 'titleIDlist' : [], 'descIDList': []}
+           
+            queryIDset.add(QueryID)
+            titleIDset.add(TitleID)
+            descIDset.add(DescriptionID)
+
+            userDict[UserID]['queryIDlist'].append(QueryID)
+            #only track clicked ads' infomation
+            if Click > 0 :
+                userDict[UserID]['titleIDlist'].append(TitleID)
+                userDict[UserID]['descIDList'].append(DescriptionID)
+
+        #dump aggregation result to file
+        dump_format = '%s%s%s%s\n'
+        aggregateUserResult = file(aggregateUserResultFile, 'w')
+        for user in userDict :
+            #if len(userDict[user]['queryIDlist']) < 3 : continue
+            aggregateUserResult.write(dump_format % \
+                    (user,
+                        ','.join(userDict[user]['queryIDlist']),
+                        ','.join(userDict[user]['titleIDlist']),
+                        ','.join(userDict[user]['descIDList'])))
+        aggregateUserResult.close()
+
+        #dump all ID set to files which would be used to filter additional data.
+        dumpFilesName = {'queryID.set' : queryIDset, 'titleID.set' : titleIDset, 'descID.set' : descIDset}
+        for filename, s in dumpFilesName.items() :
+            dumpfile = file(filename, 'w')
+            for item in s :
+                dumpfile.write('%s\n' % (item))
+            dumpfile.close()
+
+
+    def expandId2Tokens(self, aggregateUserfile = 'user.aggr', expandId2TokensResultFile = 'user.expand2Tokens', isFiltered = True) :
+        if isFiltered :
+            filterstr = '.filter'
+        else :
+            filterstr = ''
+        description_map = dict([(line.strip().split('\t')) for line in file(dataset['description'] + filterstr)])
+        query_map = dict([(line.strip().split('\t')) for line in file(dataset['query'] + filterstr)])
+        title_map = dict([(line.strip().split('\t')) for line in file(dataset['title'] + filterstr)])
+        profile_map = dict([(line.strip().split('\t', 1)) for line in file(dataset['profile'] + filterstr)])
+
+        dump_format = '%s%s%s%s%s\n'
+        expandId2TokensResult = file(expandId2TokensResultFile, 'w') 
+        for line in file(aggregateUserfile) :
+            userID, queryIDlist, titleIDlist, descIDList = line.strip().split('')
+            queryExpandTokensStr = '|'.join([query_map[queryId] for queryId in queryIDlist.split(',') if queryId != ''])
+            titleExpandTokensStr = '|'.join([title_map[titleId] for titleId in titleIDlist.split(',') if titleId != ''])
+            descExpandTokensStr = '|'.join([description_map[descId] for descId in descIDList.split(',') if descId != ''])
+            profileExpandTokensStr = '|'.join(profile_map.get(userID, "'0'\t'0'").split('\t'))
+            expandId2TokensResult.write( dump_format % \
+                   (userID, profileExpandTokensStr, queryExpandTokensStr, titleExpandTokensStr, descExpandTokensStr))
+
+        expandId2TokensResult.close()
+
     def filterUsers(self, usersetFile = '', filterResultFile = '') :
         userset = set()
         for line in file(usersetFile) :
@@ -67,8 +159,31 @@ class TrainingSet_util :
                 TitleID, DescriptionID, UserID = terms
             if UserID in userset :
                 filterResult.write(line)
-            if line_cnt % 10000 == 0 :
+            if line_cnt % 100000 == 0 :
                 print line_cnt
+
+    def filterAdditionalData(self, usersetFile = 'user.dat', querysetFile = 'queryID.set', titlesetFile = 'titleID.set', descsetFile = 'descID.set') :
+        userset = set()
+        queryIDset = set()
+        titleIDset = set()
+        descIDset = set()
+
+        for line in file(usersetFile) :
+            userset.add(line.strip())
+        for line in file(querysetFile) :
+            queryIDset.add(line.strip())
+        for line in file(titlesetFile) :
+            titleIDset.add(line.strip())
+        for line in file(descsetFile) :
+            descIDset.add(line.strip())
+        
+        filter_data = [('description', descIDset), ('query', queryIDset), ('title', titleIDset), ('profile',userset)]
+        for dataname, checkset in filter_data :
+            filter_result = file(dataset[dataname] + '.filter', 'w')
+            for line in file(dataset[dataname]) :
+                if line.strip().split('\t')[0] in checkset :
+                    filter_result.write(line)
+            filter_result.close()
 
     def prepare(self) :
         self.click_cnt = 0
@@ -132,9 +247,17 @@ class TrainingSet_util :
 
 if __name__ == '__main__' :
     dataset = {}
-    #dataset['training'] = '../dataset/training.sample'
-    dataset['training'] = sys.argv[1]
+    dataset['training'] = '../dataset/training.txt'
+    dataset['description'] = '../dataset/descriptionid_tokensid.txt'
+    dataset['query'] = '../dataset/queryid_tokensid.txt'
+    dataset['title'] = '../dataset/titleid_tokensid.txt'
+    dataset['profile'] = '../dataset/userid_profile.txt'
+
+    #dataset['training'] = sys.argv[1]
 #    dataset['training'] = '../dataset/training.txt'
     ts_util = TrainingSet_util(dataset)
-    ts_util.prepare()
-    ts_util.printStatus()
+#    ts_util.prepare()
+#    ts_util.printStatus()
+#    ts_util.aggregateUser()
+#    ts_util.filterAdditionalData('user.dat')
+    ts_util.expandId2Tokens()
