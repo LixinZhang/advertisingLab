@@ -10,7 +10,7 @@ Each line consists of fields delimited by the TAB character
 * AdvertiserID : a property of the ad
 * Depth : The number of ads impressed in a session is known as the 'depth'
 * Position : The order of an ad in the impression list is known as the 'position' of that ad.
-*  QueryID : id of the queryid_tokensid. It is the key of the data file 'queryid_tokensid.txt'
+* QueryID : id of the queryid_tokensid. It is the key of the data file 'queryid_tokensid.txt'
 * KeywordID : a property of ads 
 
 	This is the key of  'purchasedkeyword_tokensid.txt'. 
@@ -47,7 +47,28 @@ class TrainingSet_util :
         return  int(Click), int(Impression), Display_url,\
                 AdID, AdvertiserID, int(Depth), \
                 int(Position), QueryID, KeywordID,\
-                TitleID, DescriptionID, UserID 
+                TitleID, DescriptionID, UserID
+
+    def filterUsers(self, usersetFile = '', filterResultFile = '') :
+        userset = set()
+        for line in file(usersetFile) :
+            userset.add(line.strip())
+
+        filterResult = file(filterResultFile, 'w')
+
+        line_cnt = 0
+        for line in file(self.training_log_file) :
+            line_cnt += 1
+            terms = self._parse_training_log_file(line) 
+            if terms == None : continue
+            Click, Impression, Display_url,\
+                AdID, AdvertiserID, Depth, \
+                Position, QueryID, KeywordID,\
+                TitleID, DescriptionID, UserID = terms
+            if UserID in userset :
+                filterResult.write(line)
+            if line_cnt % 10000 == 0 :
+                print line_cnt
 
     def prepare(self) :
         self.click_cnt = 0
