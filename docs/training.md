@@ -1,4 +1,4 @@
-#Training Data
+#Training Data Format
 ###Each line consists of fields delimited by the TAB character
 1. Click : the number of times, among the above impressions, the user (UserID) clicked the ad (AdID)
 * Impression : the number of search sessions in which the ad (AdID) was impressed by the user (UserID) who issued the query (Query).
