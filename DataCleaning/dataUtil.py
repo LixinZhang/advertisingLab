@@ -28,6 +28,20 @@ def generateAd2UsersGivenAdSet(data_training, adSet) :
         ad2Users[AdID].add(UserID)
     return ad2Users
 
+def generateUser2AdGivenAd2User(fn_ad2user, adViewThreshold = 0) :
+    userSet = dict()
+    for line in file(fn_ad2user) :
+        adid, users = line.strip().split('\x01')
+        for user in users.split('\t') :
+            if user not in userSet :
+                userSet[user] = []
+            userSet[user].append(adid)
+
+    under_threshold = [user for user in userSet if len(userSet[user]) < adViewThreshold]
+    for rm_user in under_threshold :
+        del userSet[rm_user]
+    return userSet
+
 def dumpUserRawFeatureGivenUserSet(data_training, userSet, fn) :
     userDict = dict([(userid, {'queryIDlist' : [], 'titleIDlist' : [], 'descIDList': []}) for userid in userSet])
     queryIDset = set()
@@ -106,11 +120,15 @@ if __name__ == '__main__' :
     ad2Users = generateAd2UsersGivenAdSet(input_file, adSet)
     dumpDict2File(ad2Users, TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict')
 
+
+    userDict = generateUser2AdGivenAd2User(TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict', adViewThreshold = 10)
+    dumpDict2File(userDict, TMP_DATA_DIR_PATH + 'user2AdGivenAd2User.dict')
+
     userSet = set()
-    for line in file(TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict') :
-        adid, users = line.strip().split('\x01')
-        for user in users.split('\t') :
-            userSet.add(user)
+    for line in file(TMP_DATA_DIR_PATH + 'user2AdGivenAd2User.dict') :
+        user, ads = line.strip().split('\x01')
+        userSet.add(user)
+    print len(userSet)
     
     dumpUserRawFeatureGivenUserSet(input_file, userSet, TMP_DATA_DIR_PATH + 'userRawFeature.dict')
 
