@@ -1,4 +1,4 @@
-kddcup_lab
+Advertising lab
 ==========
 ##KDD CUP 2012 track2
 ###Desciption
