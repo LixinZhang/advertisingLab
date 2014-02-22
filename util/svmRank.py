@@ -1,7 +1,7 @@
 import sys, os
 import ConfigParser
 import __init__
-from __init__ import BASE_SVM_RANK_DIR, SVM_RANK_ARGS, logging
+from __init__ import BASE_SVM_RANK_DIR, SVM_RANK_ARGS, logging, TMP_DATA_DIR_PATH
 
 class SVM_RANK :
 
