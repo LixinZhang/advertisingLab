@@ -33,9 +33,7 @@ def expandFeatureId2Tokens(aggregateUserfile, expandId2TokensResultFile, query_s
         descExpandTokensStr = '|'.join([description_map[descId] for descId in descIDList.split('\t') if descId != ''])
         expandId2TokensResult.write( dump_format % \
                (userID, queryExpandTokensStr, titleExpandTokensStr, descExpandTokensStr))
-
     expandId2TokensResult.close()
-
     
 def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight', 
     fn_ad2userStatus=TMP_DATA_DIR_PATH+'ad2userStatus.dict',
@@ -51,7 +49,7 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
     trainFeature = file(fn_trainFeature)
     for userid in userlist :
         tmp, feature_str = trainFeature.readline().strip().split(' ',1)
-        userFeature[userid] = userFeature
+        userFeature[userid] = finalData4SVMRanking.dat
 
     logging.debug('=====load raw training Feature Done.=====')
     logging.debug('=====join final data start=====')
@@ -66,7 +64,7 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
         elif click > 2 : status = 3
         elif click > 0 : status = 2
 
-        if userid not userFeature :
+        if userid not in userFeature :
             logging.warn('%s not in userFeature' % userid)
             continue
         output.write(format % (status, adid, userFeature[userid]))
