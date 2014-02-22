@@ -26,9 +26,8 @@ class SVM_RANK :
 
 if __name__ == '__main__' :
     #test
-    svm_rank = SVM_RANK()
-    features = './corpus2learn.dat'
-    model = 'output_model.tmp'
-    svm_rank.svm_rank_learn(features, model)
-    predictions = 'output_predictions.tmp'
-    svm_rank.svm_rank_classify(features, model, predictions)
+    features = TMP_DATA_DIR_PATH + 'finalData4SVMRanking.dat'
+    model = TMP_DATA_DIR_PATH + 'SVMRanking.model'
+    SVM_RANK.svm_rank_learn(features, model)
+    predictions = TMP_DATA_DIR_PATH + 'SVMRanking.prediction'
+    SVM_RANK.svm_rank_classify(features, model, predictions)
