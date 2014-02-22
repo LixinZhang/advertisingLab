@@ -53,28 +53,36 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
         userFeature[userid] = feature_str
 
     logging.debug('=====load raw training Feature Done.=====')
-    logging.debug('=====join final data start=====')
-    output = file(fb_out_SVMRanking, 'w')
-
-    adid2Idx = {}
-    idx = 1
-    format = '%d qid:%s %s\n'
+    logging.debug('=====loading status map.=====')
+    
+    statusMap = {}
     for line in file(fn_ad2userStatus) :
         adid, userid, click, impression = line.strip().split('\t')
-        if adid not in adid2Idx :
-            adid2Idx[adid] = idx
-            idx += 1
         click = int(click)
         impression = int(impression)
         status = 1
         if click > 5 : status = 4
         elif click > 2 : status = 3
         elif click > 0 : status = 2
+        statusMap[(adid, userid)] = status
 
-        if userid not in userFeature :
-            logging.warn('%s not in userFeature' % userid)
-            continue
-        output.write(format % (status, adid2Idx[adid], userFeature[userid]))
+    logging.debug('=====join final data start=====')
+    output = file(fb_out_SVMRanking, 'w')
+    format = '%d qid:%d %s\n'
+    adid2Idx = {}
+    idx = 1
+    for line in file(TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict') :
+        adid, user_str = line.strip().split('\x01')
+        if adid not in adid2Idx :
+            adid2Idx[adid] = idx
+            idx += 1
+        userids = user_str.split('\t')
+        for userid in userids :
+            if userid not in userFeature :
+                logging.warn('%s not in userFeature' % userid)
+                continue
+        output.write(format % (statusMap[(adid, userid)], adid2Idx[adid], userFeature[userid]))
+
     output.close()
 
     dumpDict2File(adid2Idx, TMP_DATA_DIR_PATH+'adid2Idx.dict')
