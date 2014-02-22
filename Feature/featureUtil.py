@@ -1,6 +1,7 @@
 import __init__
 import sys
 from util import logging, TMP_DATA_DIR_PATH, DATA_TRAINING, DATA_DESCRIPTION, DATA_QUERY, DATA_TITLE, DATA_PROFILE, DATA_TRAINING_SAMPLE
+from DataCleaning.dataUtil import dumpDict2File
 
 def getUserFeatureSet() :
     logging.info('=========start getUserFeatureSet processing=========')
@@ -54,9 +55,15 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
     logging.debug('=====load raw training Feature Done.=====')
     logging.debug('=====join final data start=====')
     output = file(fb_out_SVMRanking, 'w')
+
+    adid2Idx = {}
+    idx = 1
     format = '%d qid:%s %s\n'
     for line in file(fn_ad2userStatus) :
         adid, userid, click, impression = line.strip().split('\t')
+        if adid not in adid2Idx :
+            adid2Idx[adid] = idx
+            idx += 1
         click = int(click)
         impression = int(impression)
         status = 1
@@ -67,8 +74,12 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
         if userid not in userFeature :
             logging.warn('%s not in userFeature' % userid)
             continue
-        output.write(format % (status, adid, userFeature[userid]))
+        output.write(format % (status, adid2Idx[adid], userFeature[userid]))
     output.close()
+
+    dumpDict2File(adid2Idx, TMP_DATA_DIR_PATH+'adid2Idx.dict')
+
+
 
 
 if __name__ == '__main__' :
