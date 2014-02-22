@@ -45,7 +45,7 @@ if __name__ == '__main__' :
     #lda = LDA('/Users/zhanglixin/research/kdd_cup/kddcup_lab/src/utils/corpus.dat')
     lda = LDA(TMP_DATA_DIR_PATH + 'tmp')
     lda.run(num_topics=200, fn_bow=TMP_DATA_DIR_PATH+'corpus.svmlight', fn_out_topic=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight')
-    os.system('rm' + TMP_DATA_DIR_PATH + 'tmp')
+    os.system('rm ' + TMP_DATA_DIR_PATH + 'tmp')
 
 
 

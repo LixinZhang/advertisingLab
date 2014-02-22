@@ -42,6 +42,20 @@ def generateUser2AdGivenAd2User(fn_ad2user, adViewThreshold = 0) :
         del userSet[rm_user]
     return userSet
 
+def dumpAd2UserStatus(data_training, adSet, userSet, fn_out) :
+    output = file(fn_out, 'w')
+    format = '%s\t%s\t%d\t%d\n'
+    for line in file(data_training) :
+        fields = dataParser.parseTrainData(line)
+        if fields == None or len(fields) == 0 : return
+        Click, Impression, Display_url, AdID, AdvertiserID, Depth, \
+        Position, QueryID, KeywordID, TitleID, DescriptionID, UserID = fields
+        if AdID not in adSet or UserID not in userSet :
+            continue
+        output.write(format % (AdID, UserID, Click, Impression))
+    output.close()
+
+
 def dumpUserRawFeatureGivenUserSet(data_training, userSet, fn) :
     userDict = dict([(userid, {'queryIDlist' : [], 'titleIDlist' : [], 'descIDList': []}) for userid in userSet])
     queryIDset = set()
