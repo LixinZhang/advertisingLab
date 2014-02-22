@@ -80,7 +80,7 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
         for userid in userids :
             if userid not in userFeature or (adid, userid) not in statusMap:
                 continue
-        output.write(format % (statusMap[(adid, userid)], adid2Idx[adid], userFeature[userid]))
+            output.write(format % (statusMap[(adid, userid)], adid2Idx[adid], userFeature[userid]))
 
     output.close()
 
