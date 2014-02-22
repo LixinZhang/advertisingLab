@@ -49,7 +49,7 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
     trainFeature = file(fn_trainFeature)
     for userid in userlist :
         tmp, feature_str = trainFeature.readline().strip().split(' ',1)
-        userFeature[userid] = finalData4SVMRanking.dat
+        userFeature[userid] = feature_str
 
     logging.debug('=====load raw training Feature Done.=====')
     logging.debug('=====join final data start=====')
