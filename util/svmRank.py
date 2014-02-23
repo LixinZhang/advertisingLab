@@ -8,7 +8,7 @@ class SVM_RANK :
     svm_rank_classify_command = BASE_SVM_RANK_DIR + 'svm_rank_classify'
     svm_rank_learn_command = BASE_SVM_RANK_DIR + 'svm_rank_learn'
 
-    @staticmethod    
+    @staticmethod
     def svm_rank_classify(features, model, predictions):
         logging.info(('=='*10 + '%s' + '=='*10) % ( 'START SVM CLASSIFING'))
         svm_rank_classify_format = '%s %s %s %s'
