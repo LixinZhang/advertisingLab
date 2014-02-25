@@ -23,7 +23,6 @@ def ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_ad
 
     ad2SortedUsers = dict()
     userIDList = file(fn_userID4SVMRanking)
-
     rankingResult = file(fn_rankingResult)
 
     for line in file(fn_SVMRanking) :

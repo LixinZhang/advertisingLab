@@ -56,7 +56,6 @@ def dumpAd2UserStatus(data_training, adSet, userSet, fn_out) :
         output.write(format % (AdID, UserID, Click, Impression))
     output.close()
 
-
 def dumpUserRawFeatureGivenUserSet(data_training, userSet, fn) :
     userDict = dict([(userid, {'queryIDlist' : [], 'titleIDlist' : [], 'descIDList': []}) for userid in userSet])
     queryIDset = set()
@@ -74,7 +73,6 @@ def dumpUserRawFeatureGivenUserSet(data_training, userSet, fn) :
         queryIDset.add(QueryID)
         titleIDset.add(TitleID)
         descIDset.add(DescriptionID)
-
         userDict[UserID]['queryIDlist'].append(QueryID)
         #only track clicked ads' infomation
         if Click > 0 :
@@ -100,8 +98,8 @@ def dumpUserRawFeatureGivenUserSet(data_training, userSet, fn) :
             dumpfile.write('%s\n' % (item))
         dumpfile.close()
 
-def run(input_file) :
-    #input_file = DATA_TRAINING_SAMPLE
+if __name__ == '__main__' :
+    input_file = DATA_TRAINING_SAMPLE
 
     adClickCntList = generateTopAdsUsersByClick(input_file)
     dumpList2File(adClickCntList, TMP_DATA_DIR_PATH + 'topAdClickCnt.dict')
@@ -125,9 +123,5 @@ def run(input_file) :
     print len(userSet)
     
     dumpUserRawFeatureGivenUserSet(input_file, userSet, TMP_DATA_DIR_PATH + 'userRawFeature.dict')
-
-
-if __name__ == '__main__' :
-    run(input_file=DATA_TRAINING_SAMPLE)
 
 

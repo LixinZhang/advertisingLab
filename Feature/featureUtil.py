@@ -108,7 +108,7 @@ if __name__ == '__main__' :
     query_set, desc_set, title_set = getUserFeatureSet()
     aggregateUserfile = TMP_DATA_DIR_PATH + 'userRawFeature.dict'
     expandId2TokensResultFile = TMP_DATA_DIR_PATH + 'userRawExpandTokens.dict'
-    #duexpandFeatureId2Tokens(aggregateUserfile, expandId2TokensResultFile, query_set, desc_set, title_set)
+    #expandFeatureId2Tokens(aggregateUserfile, expandId2TokensResultFile, query_set, desc_set, title_set)
     joinResult4SVMRanking(fn_out_SVMRanking=TMP_DATA_DIR_PATH+'finalData4SVMRanking.dat')
 
 
