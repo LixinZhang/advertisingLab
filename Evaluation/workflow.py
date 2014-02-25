@@ -11,8 +11,9 @@ if __name__ == '__main__' :
     fn_ad2userStatus = TMP_DATA_DIR_PATH + 'ad2userStatus.dict'
 
     fn_out_ad2userCTR = TMP_DATA_DIR_PATH + "ad2userCTR.dict"
-    
+    fn_SVMRanking=TMP_DATA_DIR_PATH+'finalData4SVMRanking.dat'
+
     #calculate ctr distribution
-    ctrDistribution(fn_rankingResult, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR)
+    ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR)
     #plot single ad's users' ctr distribution
     displaySingleAd(fn_out_ad2userCTR)

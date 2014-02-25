@@ -17,32 +17,40 @@ def loadAd2userClickImpsCache(fn_ad2userStatus) :
         adUser2ClickImps[(adid, userid)] = (int(click), int(impression))
     return adUser2ClickImps
 
-def ctrDistribution(fn_rankingResult, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2UserCTR) :
+def ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2UserCTR) :
     idx2adId = loadIdx2AdIdCache(fn_adId2Idx)
     adUser2ClickImps = loadAd2userClickImpsCache(fn_ad2userStatus)
 
     ad2SortedUsers = dict()
     userIDList = file(fn_userID4SVMRanking)
-    for line in file(fn_rankingResult) :
-        score, qid, rest = line.split(' ',2)
-        adid = qid.split(':')[1]
+
+    rankingResult = file(fn_rankingResult)
+
+    for line in file(fn_SVMRanking) :
+        raw_score, qid, rest = line.split(' ',2)
+        adid = idx2adId[qid.split(':')[1]]
         userid = userIDList.readline().strip()
         if adid not in ad2SortedUsers :
             ad2SortedUsers[adid] = []
-        ad2SortedUsers[adid].append(adUser2ClickImps[(adid, userid)])
+        prediction_score = float(rankingResult.readline())
+        click, imps = adUser2ClickImps[(adid, userid)]
+        ad2SortedUsers[adid].append((prediction_score, click, imps))
 
     mean_click = {}
     mean_impression = {}
     ad2userCTR = {}
 
     for adid in ad2SortedUsers :
-        mean_click[adid] = numpy.mean(item[0] for item in ad2SortedUsers)
-        mean_impression[adid] = numpy.mean(item[1] for item in ad2SortedUsers)
+        ad2SortedUsers[adid].sort(reverse=True)
+        mean_click[adid] = numpy.mean([item[1] for item in ad2SortedUsers[adid]])
+        mean_impression[adid] = numpy.mean([item[2] for item in ad2SortedUsers[adid]])
         ad2userCTR[adid] = []
     
     for adid in ad2SortedUsers :
-        for click, imps in ad2SortedUsers[adid] :
-            ad2userCTR[adid].append((click + mean_click[adid]) * 1.0 / (imps + mean_impression[adid]))
+        for raw_score, click, imps in ad2SortedUsers[adid] :
+            ctr = (click + mean_click[adid]) * 1.0 / (imps + mean_impression[adid])
+            ad2userCTR[adid].append(ctr)
+        
     dumpDict2File(ad2userCTR, fn_out_ad2UserCTR)
 
 if __name__ == '__main__' :

@@ -51,7 +51,7 @@ def dumpAd2UserStatus(data_training, adSet, userSet, fn_out) :
         if fields == None or len(fields) == 0 : return
         Click, Impression, Display_url, AdID, AdvertiserID, Depth, \
         Position, QueryID, KeywordID, TitleID, DescriptionID, UserID = fields
-        if AdID not in adSet or UserID not in userSet :
+        if Impression <= 1 or AdID not in adSet or UserID not in userSet :
             continue
         output.write(format % (AdID, UserID, Click, Impression))
     output.close()
@@ -100,10 +100,8 @@ def dumpUserRawFeatureGivenUserSet(data_training, userSet, fn) :
             dumpfile.write('%s\n' % (item))
         dumpfile.close()
 
-
-if __name__ == '__main__' :
-
-    input_file = DATA_TRAINING_SAMPLE
+def run(input_file) :
+    #input_file = DATA_TRAINING_SAMPLE
 
     adClickCntList = generateTopAdsUsersByClick(input_file)
     dumpList2File(adClickCntList, TMP_DATA_DIR_PATH + 'topAdClickCnt.dict')
@@ -127,5 +125,9 @@ if __name__ == '__main__' :
     print len(userSet)
     
     dumpUserRawFeatureGivenUserSet(input_file, userSet, TMP_DATA_DIR_PATH + 'userRawFeature.dict')
+
+
+if __name__ == '__main__' :
+    run(input_file=DATA_TRAINING_SAMPLE)
 
 

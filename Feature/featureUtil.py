@@ -35,10 +35,25 @@ def expandFeatureId2Tokens(aggregateUserfile, expandId2TokensResultFile, query_s
         expandId2TokensResult.write( dump_format % \
                (userID, queryExpandTokensStr, titleExpandTokensStr, descExpandTokensStr))
     expandId2TokensResult.close()
+
+def genStatus(click, imps) :
+    status = 0
+    if click == 0 :
+        if imps > 20 : status = 0
+        elif imps > 13 : status = 1
+        elif imps > 7 : status = 2
+        elif imps > 3 : status = 3
+        else : status = 4
+    else :
+        if click > 7 : status = 10
+        elif click > 5 : status = 9
+        elif click > 2: status = 8
+        else : status = 7
+    return status
     
 def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight', 
     fn_ad2userStatus=TMP_DATA_DIR_PATH+'ad2userStatus.dict',
-    fb_out_SVMRanking='') :
+    fn_out_SVMRanking='') :
     logging.info('=====joinResult4SVMRanking Start=====')
     userFeature = {}
     userlist = []
@@ -60,14 +75,11 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
         adid, userid, click, impression = line.strip().split('\t')
         click = int(click)
         impression = int(impression)
-        status = 1
-        if click > 5 : status = 4
-        elif click > 2 : status = 3
-        elif click > 0 : status = 2
+        status = genStatus(click, impression)
         statusMap[(adid, userid)] = status
 
     logging.debug('=====join final data start=====')
-    output = file(fb_out_SVMRanking, 'w')
+    output = file(fn_out_SVMRanking, 'w')
     format = '%d qid:%d %s\n'
     adid2Idx = {}
     
@@ -96,7 +108,7 @@ if __name__ == '__main__' :
     query_set, desc_set, title_set = getUserFeatureSet()
     aggregateUserfile = TMP_DATA_DIR_PATH + 'userRawFeature.dict'
     expandId2TokensResultFile = TMP_DATA_DIR_PATH + 'userRawExpandTokens.dict'
-    expandFeatureId2Tokens(aggregateUserfile, expandId2TokensResultFile, query_set, desc_set, title_set)
-    joinResult4SVMRanking(fb_out_SVMRanking=TMP_DATA_DIR_PATH+'finalData4SVMRanking.dat')
+    #duexpandFeatureId2Tokens(aggregateUserfile, expandId2TokensResultFile, query_set, desc_set, title_set)
+    joinResult4SVMRanking(fn_out_SVMRanking=TMP_DATA_DIR_PATH+'finalData4SVMRanking.dat')
 
 
