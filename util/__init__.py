@@ -2,7 +2,7 @@ from ConfigParser import ConfigParser
 import logging
 
 cp = ConfigParser()
-cp.read('../conf/config.conf')
+cp.read('./conf/config.conf')
 LOG_LEVEL_MAP = {'DEBUG':logging.DEBUG, 'INFO':logging.INFO}
 
 #Read Configuration Options from conf file

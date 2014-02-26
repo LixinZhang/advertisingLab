@@ -1,9 +1,10 @@
+import os
 from util import logging, TMP_DATA_DIR_PATH, DATA_TRAINING, DATA_DESCRIPTION, DATA_QUERY, DATA_TITLE, DATA_PROFILE, DATA_TRAINING_SAMPLE
 from DataCleaning.dataUtil import generateTopAdsUsersByClick, generateAd2UsersGivenAdSet, generateUser2AdGivenAd2User, dumpAd2UserStatus, dumpUserRawFeatureGivenUserSet
 
 from Feature import topicLDA
 from Feature.featureUtil import expandFeatureId2Tokens, getUserFeatureSet, joinResult4SVMRanking
-from util import SVM_RANK
+from util.svmRank import SVM_RANK
 from util.common import dumpList2File, dumpDict2File
 
 from Evaluation.ctrDistribution import ctrDistribution
@@ -19,11 +20,13 @@ def dataCleaning() :
     for line in file(TMP_DATA_DIR_PATH + 'topAdClickCnt.dict') :
         cnt, adid = line.strip().split()
         adSet.add(adid)
+    logging.debug(len(adSet))
     ad2Users = generateAd2UsersGivenAdSet(input_file, adSet)
     dumpDict2File(ad2Users, TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict')
     userDict = generateUser2AdGivenAd2User(TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict', adViewThreshold = 10)
     dumpDict2File(userDict, TMP_DATA_DIR_PATH + 'user2AdGivenAd2User.dict')
     userSet = set()
+    logging.debug(len(userSet))
     for line in file(TMP_DATA_DIR_PATH + 'user2AdGivenAd2User.dict') :
         user, ads = line.strip().split('\x01')
         userSet.add(user)
@@ -60,6 +63,8 @@ def Training():
 
 def Prediction() :
     logging.info('===Prediction Processing===')
+    features = TMP_DATA_DIR_PATH + 'finalData4SVMRanking.dat'
+    model = TMP_DATA_DIR_PATH + 'SVMRanking.model'
     predictions = TMP_DATA_DIR_PATH + 'SVMRanking.prediction'
     SVM_RANK.svm_rank_classify(features, model, predictions)
 
@@ -76,7 +81,7 @@ def Evaluation() :
     #calculate ctr distribution
     ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR)
     #plot single ad's users' ctr distribution
-    displaySingleAd(fn_out_ad2userCTR)
+    #displaySingleAd(fn_out_ad2userCTR)
 
 if __name__ == '__main__' :
     # Let us just play it !

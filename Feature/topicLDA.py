@@ -21,8 +21,8 @@ class LDA(object) :
         for line in open(self.corpusFile) :
             yield self.dictionary.doc2bow(line.lower().split('|'))
 
-    def run(self, num_topics=200, fn_bow='corpus.svmlight', fn_out_topic='LDA_corpus.svmlight') :
-        self.generateDict()
+    def run(lda, num_topics=200, fn_bow='corpus.svmlight', fn_out_topic='LDA_corpus.svmlight') :
+        lda.generateDict()
         logging.debug('=====start generateDict=====')
         corpora.SvmLightCorpus.serialize(fn_bow, lda)
         bow_corpus = corpora.SvmLightCorpus(fn_bow) 
@@ -44,7 +44,7 @@ if __name__ == '__main__' :
 
     #lda = LDA('/Users/zhanglixin/research/kdd_cup/kddcup_lab/src/utils/corpus.dat')
     lda = LDA(TMP_DATA_DIR_PATH + 'tmp')
-    lda.run(num_topics=200, fn_bow=TMP_DATA_DIR_PATH+'corpus.svmlight', fn_out_topic=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight')
+    LDA.run(lda, num_topics=200, fn_bow=TMP_DATA_DIR_PATH+'corpus.svmlight', fn_out_topic=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight')
     os.system('rm ' + TMP_DATA_DIR_PATH + 'tmp')
 
 
