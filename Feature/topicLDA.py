@@ -17,14 +17,16 @@ class LDA(object) :
         logging.debug('=====Total %d tokens=====' % len(self.dictionary.dfs) )
         self.dictionary.compactify()
 
-    def __iter__(self) :
-        for line in open(self.corpusFile) :
+    def __iter__(self, fn=None) :
+        if fn == None : fn = self.corpusFile
+        for line in open(fn) :
             yield self.dictionary.doc2bow(line.lower().split('|'))
 
-    def run(lda, num_topics=200, fn_bow='corpus.svmlight', fn_out_topic='LDA_corpus.svmlight') :
+    def run(lda, num_topics=200, raw_corpus='corpus', fn_bow='corpus.svmlight', fn_out_topic='LDA_corpus.svmlight') :
         lda.generateDict()
         logging.debug('=====start generateDict=====')
-        corpora.SvmLightCorpus.serialize(fn_bow, lda)
+        corpora.SvmLightCorpus.serialize(fn_bow, lda.__iter__(raw_corpus))
+        return 
         bow_corpus = corpora.SvmLightCorpus(fn_bow) 
         logging.debug('=====Topic Processing=====')
         lda_model = models.ldamodel.LdaModel(bow_corpus, id2word=lda.dictionary, num_topics=num_topics)
@@ -44,7 +46,7 @@ if __name__ == '__main__' :
 
     #lda = LDA('/Users/zhanglixin/research/kdd_cup/kddcup_lab/src/utils/corpus.dat')
     lda = LDA(TMP_DATA_DIR_PATH + 'tmp')
-    LDA.run(lda, num_topics=200, fn_bow=TMP_DATA_DIR_PATH+'corpus.svmlight', fn_out_topic=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight')
+    LDA.run(lda, num_topics=200, raw_corpus=TMP_DATA_DIR_PATH + 'tmp', fn_bow=TMP_DATA_DIR_PATH+'corpus.svmlight_test', fn_out_topic=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight_test')
     os.system('rm ' + TMP_DATA_DIR_PATH + 'tmp')
 
 

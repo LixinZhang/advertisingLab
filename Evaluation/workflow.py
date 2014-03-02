@@ -1,7 +1,7 @@
 import __init__
 from util import logging, TMP_DATA_DIR_PATH
 from ctrDistribution import ctrDistribution
-from plot import displaySingleAd
+from plot import displayGlobalResult
 
 if __name__ == '__main__' :
 
@@ -16,4 +16,4 @@ if __name__ == '__main__' :
     #calculate ctr distribution
     ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR)
     #plot single ad's users' ctr distribution
-    displaySingleAd(fn_out_ad2userCTR)
+    displayGlobalResult(fn_out_ad2userCTR)

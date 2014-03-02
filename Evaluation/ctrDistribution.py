@@ -47,7 +47,11 @@ def ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_ad
     
     for adid in ad2SortedUsers :
         for raw_score, click, imps in ad2SortedUsers[adid] :
-            ctr = (click + mean_click[adid]) * 1.0 / (imps + mean_impression[adid])
+            #ctr = (click + mean_click[adid]) * 1.0 / (imps + mean_impression[adid])
+            ctr = (click + 1) * 1.0 / (imps + 100)
+            #print mean_click[adid] * 1.0 / mean_impression[adid]
+            #ctr = click * 1.0 / imps
+            #print ctr
             ad2userCTR[adid].append(ctr)
         
     dumpDict2File(ad2userCTR, fn_out_ad2UserCTR)
