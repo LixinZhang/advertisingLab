@@ -37,6 +37,11 @@ def expandFeatureId2Tokens(aggregateUserfile, expandId2TokensResultFile, query_s
     expandId2TokensResult.close()
 
 def genStatus(click, imps) :
+    if click > 0 : 
+        return 1
+    else :
+        return 0 
+    '''
     status = 0
     if click == 0 :
         if imps > 20 : status = 0
@@ -49,6 +54,7 @@ def genStatus(click, imps) :
         elif click > 5 : status = 9
         elif click > 2: status = 8
         else : status = 7
+    '''
     return status
     
 def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight', 
