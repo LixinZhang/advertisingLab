@@ -76,7 +76,10 @@ def joinResult4SVMRanking(fn_trainFeature, fn_ad2userStatus, fn_out_SVMRanking, 
 
     trainFeature = file(fn_trainFeature)
     for userid in userlist :
-        tmp, feature_str = trainFeature.readline().strip().split(' ',1)
+        fields = trainFeature.readline().strip().split(' ',1)
+        if len(fields) != 2 : continue
+        tmp, feature_str = fields
+        if len(feature_str.split()) <= 5 : continue
         userFeature[userid] = feature_str
 
     logging.debug('=====load raw training Feature Done.=====')
