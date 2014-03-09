@@ -2,6 +2,7 @@ import __init__
 import sys
 from util import logging, TMP_DATA_DIR_PATH, DATA_TRAINING, DATA_DESCRIPTION, DATA_QUERY, DATA_TITLE, DATA_PROFILE, DATA_TRAINING_SAMPLE
 from util.common import dumpDict2File
+from topicLDA import LDA
 
 def getUserFeatureSet() :
     logging.info('=========start getUserFeatureSet processing=========')
@@ -57,13 +58,18 @@ def genStatus(click, imps) :
     '''
     return status
     
-def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight', 
-    fn_ad2userStatus=TMP_DATA_DIR_PATH+'ad2userStatus.dict',
-    fn_out_SVMRanking='') :
+def joinResult4SVMRanking(fn_trainFeature, fn_ad2userStatus, fn_out_SVMRanking, fn_userRawExpandTokens, fn_userid4SVMRanking, fn_ad2UsersGivenAdSet) :
+    '''
+    fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight'
+    fn_ad2userStatus=TMP_DATA_DIR_PATH+'ad2userStatus.dict'
+    fn_userRawExpandTokens = TMP_DATA_DIR_PATH + 'userRawExpandTokens.dict'
+
+    '''
+
     logging.info('=====joinResult4SVMRanking Start=====')
     userFeature = {}
     userlist = []
-    fn_userRawExpandTokens = TMP_DATA_DIR_PATH + 'userRawExpandTokens.dict'
+    #fn_userRawExpandTokens = TMP_DATA_DIR_PATH + 'userRawExpandTokens.dict'
     for line in file(fn_userRawExpandTokens) :
         userid, query, title, desc = line.strip().split('\x01')
         userlist.append(userid)
@@ -90,10 +96,12 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
     adid2Idx = {}
     
     #line number of userid4SVMRanking equals to output4SVMRanking's
-    userid_output = file(TMP_DATA_DIR_PATH+'userid4SVMRanking.dat', 'w')
+    #fn_userid4SVMRanking = TMP_DATA_DIR_PATH+'userid4SVMRanking.dat'
+    userid_output = file(fn_userid4SVMRanking, 'w')
 
+    #fn_ad2UsersGivenAdSet = TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict'
     idx = 1
-    for line in file(TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict') :
+    for line in file(fn_ad2UsersGivenAdSet) :
         adid, user_str = line.strip().split('\x01')
         if adid not in adid2Idx :
             adid2Idx[adid] = idx
@@ -109,6 +117,27 @@ def joinResult4SVMRanking(fn_trainFeature=TMP_DATA_DIR_PATH+'LDA_corpus.svmlight
     userid_output.close()
     dumpDict2File(adid2Idx, TMP_DATA_DIR_PATH+'adid2Idx.dict')
 
+
+def filterUserRawTokensGivenUserSet(fn_userRawExpandTokens, fn_out_userQueryTokens, userSet=None) :
+    tmp_file = file(fn_out_userQueryTokens, 'w')
+    for line in file(fn_userRawExpandTokens) :
+        userid, query, title, desc = line.strip().split('\x01')
+        if userid not in userSet : continue
+        tmp_file.write(query)
+        tmp_file.write('\n')
+    tmp_file.close()
+
+def genBagOfWordsFromUserQueryTokens(fn_userQueryTokens, fn_out_BOW) :
+    lda = LDA(fn_userQueryTokens)
+    lda.serializeBOW(fn_bow=fn_out_BOW)
+
+def getUserSetFromAd2UserStatus(fn_ad2userStatus = TMP_DATA_DIR_PATH + 'ad2userStatus.dict') :
+    userSet = set()
+    for line in file(fn_ad2userStatus) :
+        adid, userid, click, impression = line.strip().split('\t')
+        userSet.add(userid)
+    return userSet
+    
 
 if __name__ == '__main__' :
     query_set, desc_set, title_set = getUserFeatureSet()
