@@ -51,7 +51,9 @@ def dumpAd2UserStatus(data_training, adSet, userSet, fn_out) :
         if fields == None or len(fields) == 0 : return
         Click, Impression, Display_url, AdID, AdvertiserID, Depth, \
         Position, QueryID, KeywordID, TitleID, DescriptionID, UserID = fields
-        if (Click == 0 and Impression <= 2) or AdID not in adSet or UserID not in userSet :
+        #if (Click == 0 and Impression <= 2) or AdID not in adSet or UserID not in userSet :
+        #    continue
+        if AdID not in adSet or UserID not in userSet :
             continue
         output.write(format % (AdID, UserID, Click, Impression))
     output.close()
