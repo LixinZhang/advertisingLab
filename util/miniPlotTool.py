@@ -8,7 +8,7 @@ class MiniPlotTool :
     '''
     A mini tool to draw lines using pylab
     '''
-    basecolors = ['red','green','yellow','blue','black','cyan','magenta']
+    basecolors = ['red','green','blue','black','cyan','magenta']
 
     def __init__(self, baseConfig) :
         self.figsize = baseConfig.get('figsize',None)

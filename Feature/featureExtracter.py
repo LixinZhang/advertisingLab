@@ -5,6 +5,27 @@ import os, sys
 from SimilarityQueries import ctrCMP
 from util import logging, TMP_DATA_DIR_PATH
 
+def getSeedUserSet(fn_status, fn_docdata, keepAdID=None) :
+    seeduser = []
+    userid2status = {}
+
+    for line in file(fn_status) :
+        adid, userid, click, pv = line.strip().split()
+        if adid != keepAdID : continue
+        if userid not in userid2status :
+            userid2status[userid] = [0,0]
+        userid2status[userid][0] += int(click)
+        userid2status[userid][1] += int(pv)
+    for userid in userid2status :
+        click = userid2status[userid][0]
+        pv = userid2status[userid][1]
+        seeduser.append((userid, int(click), int(pv)))
+    seeduser.sort(cmp=ctrCMP, reverse=True)
+    relevantSeedUsersSet = set(item[0] for item in seeduser[:100])
+    nonrelevantSeedUsersSet = set(item[0] for item in seeduser[-200:])
+
+
+
 def relevantSeed(fn_status, fn_docdata, keepAdID=None) :
     seeduser = []
     userid2status = {}
@@ -159,7 +180,7 @@ def workflow(adID, isTransfer=False, isRelevanted=False) :
     writer.close()
     
     writer = file(TMP_DATA_DIR_PATH + 'feature/%s.idx' % adID, 'w')
-    writer.write('%s%d\n' % (adid, 1))
+    writer.write('%s%d\n' % (adID, 1))
     writer.close()
 
 

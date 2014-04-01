@@ -59,7 +59,7 @@ def displayGlobalResult(fn_ad2userCTR, fn_ad2userCTR_cmp, fn_ad2userCTR_relevant
     X2, finalRes2 = prepareData(fn_ad2userCTR_cmp, chunks)
     X3, finalRes3 = prepareData(fn_ad2userCTR_relevant, chunks)
     
-    if plot == False : return 
+    if plot == False : return zip(finalRes1, finalRes2, finalRes3)
 
     plotTool = MiniPlotTool(baseConfig)
     plotTool.addline({
@@ -89,6 +89,7 @@ def displayGlobalResult(fn_ad2userCTR, fn_ad2userCTR_cmp, fn_ad2userCTR_relevant
  
     plotTool.plot()
     plotTool.show()
+    return zip(finalRes1, finalRes2, finalRes3)
     
 if __name__ == '__main__' :
     fn_ad2userCTR = TMP_DATA_DIR_PATH+"ad2userCTR.dict"

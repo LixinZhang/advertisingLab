@@ -2,14 +2,15 @@ import __init__
 from dataUtil import *
 from genTitleDesc import genTitleDesc
 
-def getPreSet(input_file) :
+def getPreSet(input_file, refreshFile=False) :
     adSet = []
     for line in file(TMP_DATA_DIR_PATH + 'topAdClickCnt.dict') :
         cnt, adid = line.strip().split()
         adSet.append(adid)
     adSet = set(adSet)
-    #ad2Users = generateAd2UsersGivenAdSet(input_file, adSet)
-    #dumpDict2File(ad2Users, TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict')
+    if refreshFile :
+        ad2Users = generateAd2UsersGivenAdSet(input_file, adSet)
+        dumpDict2File(ad2Users, TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict')
     ad2Users = {}
     userSet = set()
     for line in file(TMP_DATA_DIR_PATH + 'ad2UsersGivenAdSet.dict') :
@@ -43,9 +44,8 @@ def joinStatus(input_file, adSet, userSet) :
 
 if __name__ == '__main__' :
     input_file = DATA_TRAINING
-    adSet, userSet = getPreSet(input_file)
-    #joinStatus(input_file, adSet, userSet)
-    adSet = set(list(adSet)[15:])
-    #generate user_title_desc 
-    genTitleDesc(input_file, adSet, userSet, fn_out='user_title_desc.dat')
+    adSet, userSet = getPreSet(input_file, refreshFile=True)
+    joinStatus(input_file, adSet, userSet)
+    #adSet = set(list(adSet)[15:])
+    #genTitleDesc(input_file, adSet, userSet, fn_out='user_title_desc.dat')
 

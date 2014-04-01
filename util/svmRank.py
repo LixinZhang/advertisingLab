@@ -26,8 +26,11 @@ class SVM_RANK :
 
 if __name__ == '__main__' :
     #test
-    features = TMP_DATA_DIR_PATH + 'finalData4SVMRanking.dat'
-    model = TMP_DATA_DIR_PATH + 'SVMRanking.model'
-    SVM_RANK.svm_rank_learn(features, model)
-    predictions = TMP_DATA_DIR_PATH + 'SVMRanking.prediction'
+    #features = TMP_DATA_DIR_PATH + 'finalData4SVMRanking.dat'
+    #model = TMP_DATA_DIR_PATH + 'SVMRanking.model'
+    features = '/Users/zhanglixin/research/tools/gensim/bm25.ranking.3k'
+    model = '/Users/zhanglixin/research/tools/gensim/bm25.ranking.model'
+    #SVM_RANK.svm_rank_learn(features, model, ' -c 10 ')
+    #predictions = TMP_DATA_DIR_PATH + 'SVMRanking.prediction'
+    predictions = 'bm25.ranking.prediction'
     SVM_RANK.svm_rank_classify(features, model, predictions)

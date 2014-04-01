@@ -2,7 +2,7 @@ import sys
 import __init__
 from util import logging, TMP_DATA_DIR_PATH, DATA_TRAINING, DATA_DESCRIPTION, DATA_QUERY, DATA_TITLE, DATA_PROFILE, DATA_TRAINING_SAMPLE
 
-def genTitleDesc(inputFile, adSet, userset=None, fn_out='user_title_desc.dat') :
+def genTitleDesc(inputFile, adSet, userset=None) :
     logging.info('Generating Click and Unclick Title Description For Per User')
 
     ad2Profile = {}

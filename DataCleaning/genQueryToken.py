@@ -3,7 +3,7 @@ from dataParser import dataParser
 import sys
 from userStatusWorkflow import getPreSet
 
-def genQueryToken (ADID) :
+def genQueryToken (input_file, ADID) :
     preFilterUserSet = set(line.split()[1] for line in file(TMP_DATA_DIR_PATH + 'status/%s.ad2userStatus.dat' % ADID ))
     user_query = {}
     num = 1

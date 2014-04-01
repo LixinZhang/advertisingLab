@@ -24,7 +24,7 @@ class SVM_RANK :
         logging.debug(cmd_text)
         os.system(cmd_text)
 
-def workflow(adid) :
+def workflow(adid, testing=False) :
     model1 = TMP_DATA_DIR_PATH + 'model/bm25.model'
     model2 = TMP_DATA_DIR_PATH + 'model/bm25.model.transfer'
     model3 = TMP_DATA_DIR_PATH + 'model/bm25.model.transfer.relevance'
@@ -36,6 +36,15 @@ def workflow(adid) :
     predictions1 = TMP_DATA_DIR_PATH + 'prediction/%s.bm25.prediction' % adid
     predictions2 = TMP_DATA_DIR_PATH + 'prediction/%s.bm25.prediction.transfer' % adid
     predictions3 = TMP_DATA_DIR_PATH + 'prediction/%s.bm25.prediction.transfer.relevance' % adid
+
+
+    if testing :
+        model1 += '.new'
+        model2 += '.new'
+        model3 += '.new'
+        predictions1 += '.new'
+        predictions2 += '.new'
+        predictions3 += '.new'
     
     SVM_RANK.svm_rank_classify(features1, model1, predictions1)
     SVM_RANK.svm_rank_classify(features2, model2, predictions2)

@@ -2,7 +2,7 @@ from ConfigParser import ConfigParser
 import logging
 
 cp = ConfigParser()
-cp.read('./conf/config.conf')
+cp.read('../conf/config.conf')
 LOG_LEVEL_MAP = {'DEBUG':logging.DEBUG, 'INFO':logging.INFO}
 
 #Read Configuration Options from conf file
@@ -20,5 +20,6 @@ DATA_PROFILE = cp.get('DATA', 'DATA_PROFILE')
 DATA_TRAINING_SAMPLE = cp.get('DATA', 'DATA_TRAINING_SAMPLE')
 
 #Init global variables
-logging.basicConfig(level=LOG_LEVEL_MAP[LOG_LEVEL])
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=LOG_LEVEL_MAP[LOG_LEVEL])
+
 
