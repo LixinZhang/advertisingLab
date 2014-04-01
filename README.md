@@ -1,17 +1,15 @@
-Advertising lab
+Learning to rank Audience for behavioral targeting
 ==========
 
 ###What is this project about ?
 Some research tasks on Computational Advertising.
 
-##Learning to rank for behavioral targeting
+##Design
+![Design](http://images.cnblogs.com/cnblogs_com/coser/561971/o_Design.jpg)
 
 ### Dataset
-   KDD CUP 2012 track2
-####Desciption
-Predict the click-through rate of ads given the query and user information.
 <a href="http://www.kddcup2012.org/c/kddcup2012-track2">KDD CUP 2012 track2</a>
-####Reference
+###Reference
 [1] Liu, Tie-Yan. "Learning to rank for information retrieval." Foundations and Trends in Information Retrieval 3.3 (2009): 225-331.
 
 [2] Liu, Ning, et al. "Learning to rank audience for behavioral targeting." Proceedings of the 33rd international ACM SIGIR conference on Research and development in information retrieval. ACM, 2010.
