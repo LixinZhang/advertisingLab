@@ -8,7 +8,7 @@ class MiniPlotTool :
     '''
     A mini tool to draw lines using pylab
     '''
-    basecolors = ['red','green','blue','black','cyan','magenta']
+    basecolors = ['red','green','yellow','blue','black','cyan','magenta']
 
     def __init__(self, baseConfig) :
         self.figsize = baseConfig.get('figsize',None)
@@ -22,6 +22,7 @@ class MiniPlotTool :
 
         if 'xticks' in baseConfig :
             xticks_conf = baseConfig.get('xticks')
+            print xticks_conf
             _rotation = int(xticks_conf.get('ticks_rotation', 0))
             x_idx = xticks_conf.get('x_idx',[])
             x_lable = xticks_conf.get('x_lable', [])
@@ -144,7 +145,6 @@ if __name__ == '__main__' :
     tool.plot()
     tool.show()
     #tool.save('test.png')
-
 
 
 

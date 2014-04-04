@@ -26,12 +26,12 @@ def ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_ad
     rankingResult = file(fn_rankingResult)
     linenum = 1
     for line in file(fn_SVMRanking) :
+        rr = rankingResult.readline()
         raw_score, qid, rest = line.split(' ',2)
         adid = idx2adId[qid.split(':')[1]]
         userid = userIDList.readline().strip()
         if adid not in ad2SortedUsers :
             ad2SortedUsers[adid] = []
-        rr = rankingResult.readline()
         #print fn_SVMRanking, rr, linenum
         linenum += 1
         prediction_score = float(rr)
@@ -51,8 +51,8 @@ def ctrDistribution(fn_SVMRanking, fn_rankingResult, fn_userID4SVMRanking, fn_ad
     for adid in ad2SortedUsers :
         print mean_click[adid], mean_impression[adid]
         for raw_score, click, imps in ad2SortedUsers[adid] :
-            #ctr = (click + mean_click[adid]) * 1.0 / (imps + mean_impression[adid])
-            ctr = (click + 0.0657842032795) * 1.0 / (imps + 1.62795719114)
+            ctr = (click + mean_click[adid]) * 1.0 / (imps + mean_impression[adid])
+            #ctr = (click + 0.0657842032795) * 1.0 / (imps + 1.62795719114)
             #print mean_click[adid] * 1.0 / mean_impression[adid]
             #ctr = click * 1.0 / imps
             #print ctr

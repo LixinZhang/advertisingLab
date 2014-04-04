@@ -29,16 +29,16 @@ def testEvaluation() :
     ctrDistribution(fn_SVMRanking, fn_rankingResult_cmp, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR_cmp)
     ctrDistribution(fn_SVMRanking, fn_rankingResult_relevant, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR_relevant)
     #plot single ad's users' ctr distribution
-    displayGlobalResult(fn_out_ad2userCTR, fn_out_ad2userCTR_cmp, fn_out_ad2userCTR_relevant, 7)
+    displayGlobalResult(fn_out_ad2userCTR, fn_out_ad2userCTR_cmp, fn_out_ad2userCTR_relevant, 5)
 
-def evaluate(adid, reCal=True, testing=False) :
+def evaluate(adid, chunks=20, reCal=True, testing=False) :
     predictions1 = TMP_DATA_DIR_PATH + 'prediction/%s.bm25.prediction' % adid
     predictions2 = TMP_DATA_DIR_PATH + 'prediction/%s.bm25.prediction.transfer' % adid
     predictions3 = TMP_DATA_DIR_PATH + 'prediction/%s.bm25.prediction.transfer.relevance' % adid
     if testing :
         predictions1 += '.new'
         predictions2 += '.new'
-        predictions3 += '.new'
+        predictions3 += ''
     fn_userID4SVMRanking = TMP_DATA_DIR_PATH + 'feature/%s.userID4SVMRanking.dat' % adid
     fn_adId2Idx = TMP_DATA_DIR_PATH + 'feature/%s.idx' % adid
     fn_ad2userStatus = TMP_DATA_DIR_PATH + 'status/%s.ad2userStatus.dat' % adid
@@ -54,15 +54,17 @@ def evaluate(adid, reCal=True, testing=False) :
         ctrDistribution(fn_SVMRanking, predictions2, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR_transfer)
         ctrDistribution(fn_SVMRanking, predictions3, fn_userID4SVMRanking, fn_adId2Idx, fn_ad2userStatus, fn_out_ad2userCTR_relevance)
         
-    finalres = displayGlobalResult(fn_out_ad2userCTR, fn_out_ad2userCTR_transfer, fn_out_ad2userCTR_relevance, 5, False)
+    finalres = displayGlobalResult(fn_out_ad2userCTR, fn_out_ad2userCTR_transfer, fn_out_ad2userCTR_relevance, chunks, False)
     top = finalres[0]
     total = finalres[-1]
-    return [(topCtr - totalCtr)/totalCtr for topCtr, totalCtr in zip(top, total)]
+    for item in finalres :
+        print item
+    return [(topCtr - totalCtr)/totalCtr for topCtr, totalCtr in zip(top, total)], finalres
 
 if __name__ == '__main__' :
     if len(sys.argv) < 2:
         print 'Usages: python %s AdID' % sys.argv[0]
         sys.exit(-1)
     adid = sys.argv[1]
-    print evaluate(adid)
-    print evaluate(adid, True, True)
+    #print evaluate(adid)
+    print evaluate(adid, 20 ,True, True)
